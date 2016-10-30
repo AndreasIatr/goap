@@ -1,19 +1,16 @@
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
-public class PlannerTest {
+public class CrossLakeTest {
 
-    private static Action reachDestination;
-    private static Set<ActionNode> pathForGoal;
-    private static int expectedTotalCost;
-    private static int expectedNumberOfNodes;
+    private static Action reachDestination, chopWood, buildRaft;
+    private static LinkedList<ActionNode> pathForGoalNoState, pathForGoalWithState;
+    private static int expectedTotalCost, expectedNumberOfNodes;
 
     @BeforeClass
     public static void setup() {
@@ -24,7 +21,7 @@ public class PlannerTest {
         expectedTotalCost = 0;
         expectedNumberOfNodes = 0;
 
-        Action chopWood = new Action("Chop Wood", 1);
+        chopWood = new Action("Chop Wood", 1);
         chopWood.addEffect(hasWood);
         expectedTotalCost += chopWood.getCost();
         expectedNumberOfNodes++;
@@ -32,7 +29,7 @@ public class PlannerTest {
         Action lookForWood = new Action("Look For Wood", 2);
         lookForWood.addEffect(hasWood);
 
-        Action buildRaft = new Action("Build Raft", 5);
+        buildRaft = new Action("Build Raft", 5);
         buildRaft.addPrecondition(hasWood);
         buildRaft.addEffect(hasRaft);
         expectedTotalCost += buildRaft.getCost();
@@ -61,38 +58,44 @@ public class PlannerTest {
                 chopWood, lookForWood, buildRaft, crossLakeByBoat,
                 crossLakeBySwimming, goAroundTheLakeOnFoot, reachDestination);
 
-        pathForGoal = planner.getPathForGoal(actions, reachDestination);
+        List<String> state = new LinkedList<>();
+
+        pathForGoalNoState = planner.getPathForGoal(actions, reachDestination, state);
+
+        state.add(hasRaft);
+        pathForGoalWithState = planner.getPathForGoal(actions, reachDestination, state);
     }
 
     @Test
-    public void can_reach_destination_test() {
-        assertFalse("Could not find path", pathForGoal.isEmpty());
-        Optional<Action> destinationAction = pathForGoal.stream()
-                .map(ActionNode::getAction)
-                .skip(pathForGoal.size() - 1)
-                .findAny();
-        if (destinationAction.isPresent()) {
-            assertEquals(reachDestination, destinationAction.get());
-        } else {
-            fail("Could not find path");
-        }
+    public void can_reach_goal_no_state_test() {
+        assertFalse("Could not find path", pathForGoalNoState.isEmpty());
+        assertEquals(reachDestination, pathForGoalNoState.peekLast().getAction());
     }
 
     @Test
-    public void number_of_nodes_test() {
-        assertEquals(expectedNumberOfNodes, pathForGoal.size());
+    public void can_reach_goal_with_state_test() {
+        assertFalse("Could not find path", pathForGoalWithState.isEmpty());
+        assertEquals(reachDestination, pathForGoalWithState.peekLast().getAction());
     }
 
     @Test
-    public void fastest_path_test() {
-        Optional<ActionNode> destinationAction = pathForGoal.stream()
-                .filter(actionNode -> actionNode.getAction().equals(reachDestination))
-                .findFirst();
-        if (destinationAction.isPresent()) {
-            Integer pathCost = destinationAction.get().getTotalCost();
-            assertEquals(expectedTotalCost, pathCost.intValue());
-        } else {
-            fail("Could not find path");
-        }
+    public void number_of_nodes_no_state_test() {
+        assertEquals(expectedNumberOfNodes, pathForGoalNoState.size());
+    }
+
+    @Test
+    public void number_of_nodes_with_state_test() {
+        assertEquals(expectedNumberOfNodes - 2, pathForGoalWithState.size());
+    }
+
+    @Test
+    public void fastest_path_no_state_test() {
+        assertEquals(expectedTotalCost, pathForGoalNoState.peekLast().getTotalCost());
+    }
+
+    @Test
+    public void fastest_path_with_state_test() {
+        assertEquals(expectedTotalCost - chopWood.getCost() -buildRaft.getCost(),
+                pathForGoalWithState.peekLast().getTotalCost());
     }
 }

@@ -3,6 +3,7 @@ import lombok.Data;
 @Data
 public class ActionNode implements Comparable<ActionNode> {
     final private Action action;
+    private ActionNode previous;
     final private int totalCost;
 
     @Override
@@ -23,7 +24,7 @@ public class ActionNode implements Comparable<ActionNode> {
 
     @Override
     public int compareTo(ActionNode o) {
-        int compareTo = Integer.compare(action.getCost(), o.action.getCost());
+        int compareTo = Integer.compare(totalCost, o.totalCost);
         if (compareTo == 0) {
             compareTo = -Integer.compare(action.getPreconditions().size(), o.action.getPreconditions().size());
             if (compareTo == 0)
