@@ -45,7 +45,7 @@ public class Planner {
                 .collect(Collectors.toSet());
 
         while (!openSet.isEmpty()) {
-            ActionNode current = getLowestCostActionNode(openSet);
+            ActionNode current = Collections.min(openSet);
 
             if (current.getAction().equals(goal)) {
                 return calcPath(current);
@@ -87,10 +87,6 @@ public class Planner {
             current = current.getPrevious();
         }
         return path;
-    }
-
-    private ActionNode getLowestCostActionNode(Set<ActionNode> openSet) {
-        return Collections.min(openSet, ActionNode::compareTo);
     }
 
     private LinkedList<ActionNode> getFastestOfPaths(List<LinkedList<ActionNode>> paths) {
