@@ -11,8 +11,8 @@ import static org.junit.Assert.assertFalse;
 
 public class OpenDoorTest {
 
-    private static LinkedList<ActionNode> pathForGoalNoState, pathForGoalWithState;
-    private static Action walkThroughDoor, openDoor;
+    private static LinkedList<ActionNode<String>> pathForGoalNoState, pathForGoalWithState;
+    private static Action<String> walkThroughDoor, openDoor;
     private static int expectedTotalCost, expectedNumberOfNodes;
 
     @BeforeClass
@@ -23,44 +23,44 @@ public class OpenDoorTest {
         String doorIsOpen = "door is open";
         String doorBashed = "door bashed";
 
-        Action attemptToOpenDoor = new Action("Attempt To Open Door", 1);
+        Action<String> attemptToOpenDoor = new Action<>("Attempt To Open Door", 1);
         attemptToOpenDoor.addEffect(doorIsLocked);
         expectedNumberOfNodes++;
         expectedTotalCost += attemptToOpenDoor.getCost();
 
-        Action lookForKey = new Action("Look For Key", 4);
+        Action<String> lookForKey = new Action<>("Look For Key", 4);
         lookForKey.addPrecondition(doorIsLocked);
         lookForKey.addEffect(hasKey);
 
-        Action unlockDoor = new Action("Unlock Door", 3);
+        Action<String> unlockDoor = new Action<>("Unlock Door", 3);
         unlockDoor.addPrecondition(hasKey);
         unlockDoor.addEffect(doorIsUnlocked);
 
-        openDoor = new Action("Open Door", 1);
+        openDoor = new Action<>("Open Door", 1);
         openDoor.addPrecondition(doorIsUnlocked);
         openDoor.addEffect(doorIsOpen);
 
-        Action bashDoor = new Action("Bash Door", 6);
+        Action<String> bashDoor = new Action<>("Bash Door", 6);
         bashDoor.addPrecondition(doorIsLocked);
         bashDoor.addEffect(doorBashed);
         expectedNumberOfNodes++;
         expectedTotalCost += bashDoor.getCost();
 
-        Action breakDownDoor = new Action("Break Down Door", 1);
+        Action<String> breakDownDoor = new Action<>("Break Down Door", 1);
         breakDownDoor.addPrecondition(doorBashed);
         breakDownDoor.addEffect(doorIsOpen);
         expectedNumberOfNodes++;
         expectedTotalCost += breakDownDoor.getCost();
 
-        walkThroughDoor = new Action("Walk Through Door", 1);
+        walkThroughDoor = new Action<>("Walk Through Door", 1);
         walkThroughDoor.addPrecondition(doorIsOpen);
         expectedNumberOfNodes++;
         expectedTotalCost += walkThroughDoor.getCost();
 
-        List<Action> actions = asList(attemptToOpenDoor, lookForKey, unlockDoor, openDoor,
+        List<Action<String>> actions = asList(attemptToOpenDoor, lookForKey, unlockDoor, openDoor,
                 bashDoor, breakDownDoor, walkThroughDoor);
 
-        Planner planner = new Planner();
+        Planner<String> planner = new Planner<>();
 
         ArrayList<String> state = new ArrayList<>();
 

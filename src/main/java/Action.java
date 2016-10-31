@@ -4,19 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Data
-public class Action {
+public class Action<T> {
     private final String name;
 
     private final int cost;
 
-    private List<String> preconditions;
-    public void addPrecondition(String name) {
-        preconditions.add(name);
+    private List<T> preconditions;
+    public void addPrecondition(T precondition) {
+        preconditions.add(precondition);
     }
 
-    private List<String> effects;
-    public void addEffect(String name) {
-        effects.add(name);
+    private List<T> effects;
+    public void addEffect(T effect) {
+        effects.add(effect);
     }
 
     public Action(String name, int cost) {

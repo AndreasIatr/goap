@@ -1,9 +1,9 @@
 import lombok.Data;
 
 @Data
-public class ActionNode implements Comparable<ActionNode> {
-    final private Action action;
-    private ActionNode previous;
+public class ActionNode<T> implements Comparable<ActionNode> {
+    final private Action<T> action;
+    private ActionNode<T> previous;
     final private int totalCost;
 
     @Override
