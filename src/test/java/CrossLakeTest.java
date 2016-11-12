@@ -63,10 +63,10 @@ public class CrossLakeTest {
 
         List<String> state = new LinkedList<>();
 
-        pathForGoalNoState = planner.getPathForGoal(actions, reachDestination, state);
+        pathForGoalNoState = planner.getPlan(actions, reachDestination, state);
 
         state.add(hasRaft);
-        pathForGoalWithState = planner.getPathForGoal(actions, reachDestination, state);
+        pathForGoalWithState = planner.getPlan(actions, reachDestination, state);
     }
 
     @Test

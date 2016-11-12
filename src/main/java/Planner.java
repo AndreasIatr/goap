@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Planner<T> {
 
-    public LinkedList<ActionNode<T>> getPathForGoal(@NonNull Collection<Action<T>> actions,@NonNull Action<T> goal,@NonNull List<T> state) {
+    public LinkedList<ActionNode<T>> getPlan(@NonNull Collection<Action<T>> actions, @NonNull Action<T> goal, @NonNull List<T> state) {
         if (actions.isEmpty() || !actions.contains(goal)) {
             return new LinkedList<>();
         }

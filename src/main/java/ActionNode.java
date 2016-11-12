@@ -26,9 +26,9 @@ public class ActionNode<T> implements Comparable<ActionNode> {
     public int compareTo(ActionNode o) {
         int compareTo = Integer.compare(totalCost, o.totalCost);
         if (compareTo == 0) {
-            compareTo = -Integer.compare(action.getPreconditions().size(), o.action.getPreconditions().size());
+            compareTo = Integer.compare(action.getEffects().size(), o.action.getEffects().size());
             if (compareTo == 0)
-                return Integer.compare(action.getEffects().size(), o.action.getEffects().size());
+                return -Integer.compare(action.getPreconditions().size(), o.action.getPreconditions().size());
             return compareTo;
         }
         return compareTo;

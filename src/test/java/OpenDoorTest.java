@@ -64,10 +64,10 @@ public class OpenDoorTest {
 
         ArrayList<String> state = new ArrayList<>();
 
-        pathForGoalNoState = planner.getPathForGoal(actions, walkThroughDoor, state);
+        pathForGoalNoState = planner.getPlan(actions, walkThroughDoor, state);
 
         state.add(doorIsUnlocked);
-        pathForGoalWithState = planner.getPathForGoal(actions, walkThroughDoor, state);
+        pathForGoalWithState = planner.getPlan(actions, walkThroughDoor, state);
     }
 
     @Test
