@@ -1,3 +1,5 @@
+package goap;
+
 import lombok.NonNull;
 
 import java.util.*;

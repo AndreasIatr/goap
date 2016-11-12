@@ -1,3 +1,5 @@
+package goap;
+
 import lombok.Data;
 
 import java.util.LinkedList;
