@@ -9,6 +9,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class CrossLakeTest {
 
@@ -33,7 +34,7 @@ public class CrossLakeTest {
         expectedTotalCost += chopWood.getCost();
         expectedNumberOfNodes++;
 
-        Action<String> lookForWood = new Action<>("Look For Wood", 2);
+        Action<String> lookForWood = new Action<>("Look For Wood", () -> 2);
         lookForWood.addEffect(hasWood);
 
         buildRaft = new Action<>("Build Raft", 5);
@@ -48,11 +49,17 @@ public class CrossLakeTest {
         expectedTotalCost += crossLakeByBoat.getCost();
         expectedNumberOfNodes++;
 
-        Action<String> crossLakeBySwimming = new Action<>("Cross Lake By Swimming", 12);
+        Action<String> crossLakeBySwimming = new Action<>("Cross Lake By Swimming", () -> 12);
         crossLakeBySwimming.addEffect(crossLake);
 
         Action<String> goAroundTheLakeOnFoot = new Action<>("Go Around The Lake On Foot", 11);
         goAroundTheLakeOnFoot.addEffect(crossLake);
+
+        Action<String> fail = new Action<>("Fail", () -> {
+            fail();
+            return 10;
+        });
+        fail.addPrecondition("Lazy Cost Calculation Fails");
 
         reachDestination = new Action<>("Reach Destination", 1);
         reachDestination.addPrecondition(crossLake);
@@ -62,6 +69,7 @@ public class CrossLakeTest {
         Planner<String> planner = new Planner<>();
 
         List<Action<String>> actions = asList(
+                fail,
                 chopWood, lookForWood, buildRaft, crossLakeByBoat,
                 crossLakeBySwimming, goAroundTheLakeOnFoot, reachDestination);
 

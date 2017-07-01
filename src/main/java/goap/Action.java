@@ -4,28 +4,39 @@ import lombok.Data;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Data
 public class Action<T> {
     private final String name;
 
-    private final int cost;
+    private final Supplier<Integer> costSupplier;
+    private Integer cost;
+    public int getCost() {
+        if (cost == null) {
+            cost = costSupplier.get();
+        }
+        return cost;
+    }
 
-    private List<T> preconditions;
+    private final List<T> preconditions = new LinkedList<>();
     public void addPrecondition(T precondition) {
         preconditions.add(precondition);
     }
 
-    private List<T> effects;
+    private final List<T> effects = new LinkedList<>();
     public void addEffect(T effect) {
         effects.add(effect);
     }
 
     public Action(String name, int cost) {
         this.name = name;
-        this.cost = cost;
-        preconditions = new LinkedList<>();
-        effects = new LinkedList<>();
+        this.costSupplier = () -> cost;
+    }
+
+    public Action(String name, Supplier<Integer> costSupplier) {
+        this.name = name;
+        this.costSupplier = costSupplier;
     }
 
     @Override
@@ -35,13 +46,11 @@ public class Action<T> {
 
         Action action = (Action) o;
 
-        return cost == action.cost && name.equals(action.name);
+        return name.equals(action.name);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + cost;
-        return result;
+        return 31 * name.hashCode();
     }
 }
