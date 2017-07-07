@@ -18,7 +18,7 @@ public class OpenDoorTest {
     private static int expectedTotalCost, expectedNumberOfNodes;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws PathToGoalNotFoundException {
         String hasKey = "has key";
         String doorIsLocked = "door is locked";
         String doorIsUnlocked = "door is unlocked";

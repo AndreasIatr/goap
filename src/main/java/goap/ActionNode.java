@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class ActionNode<T> implements Comparable<ActionNode> {
-    final private Action<T> action;
+    private final Action<T> action;
     private ActionNode<T> previous;
-    final private int totalCost;
+    private final int totalCost;
 
     @Override
     public boolean equals(Object o) {

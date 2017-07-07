@@ -7,9 +7,13 @@ import java.util.stream.Collectors;
 
 public class Planner<T> {
 
-    public LinkedList<ActionNode<T>> getPlan(@NonNull Collection<Action<T>> actions, @NonNull Action<T> goal, @NonNull List<T> state) {
+    public LinkedList<ActionNode<T>> getPlan(
+            @NonNull Collection<Action<T>> actions,
+            @NonNull Action<T> goal,
+            @NonNull List<T> state) throws PathToGoalNotFoundException {
+
         if (actions.isEmpty() || !actions.contains(goal)) {
-            return new LinkedList<>();
+            throw new PathToGoalNotFoundException(goal);
         }
 
         LinkedList<Action<T>> localActions = new LinkedList<>(actions);
@@ -29,6 +33,10 @@ public class Planner<T> {
             pathForGoal = getPossiblePathsToGoal(localActions, goal, localState);
         }
 
+        if (paths.isEmpty()) {
+            throw new PathToGoalNotFoundException(goal);
+        }
+
         return getFastestOfPaths(paths);
     }
 
@@ -37,7 +45,7 @@ public class Planner<T> {
         List<T> localState = new ArrayList<>(state);
 
         // The set of nodes already evaluated.
-        Set<ActionNode> closedSet = new HashSet<>();
+        Set<ActionNode<T>> closedSet = new HashSet<>();
 
         // The set of currently discovered nodes still to be evaluated.
         // Initially, only the start nodes are known.
@@ -77,6 +85,7 @@ public class Planner<T> {
 
     /**
      * Trace back using the goalNode to construct the path
+     *
      * @param goalNode the ActionNode representing the goal
      * @return a LinkedList that describes the path from start node to goal
      */
@@ -110,10 +119,9 @@ public class Planner<T> {
     }
 
     /**
-     *
      * @param current current node
      * @param actions available actions
-     * @param state current state
+     * @param state   current state
      * @return nodes that can be traversed using current state
      */
     private List<ActionNode<T>> getNeighborActionNodes(ActionNode<T> current, Collection<Action<T>> actions, List<T> state) {

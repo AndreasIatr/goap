@@ -21,7 +21,7 @@ public class CrossLakeTest {
     private static int expectedTotalCost, expectedNumberOfNodes;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws PathToGoalNotFoundException {
         String hasWood = "has wood";
         String crossLake = "cross lake";
         String hasRaft = "has raft";
