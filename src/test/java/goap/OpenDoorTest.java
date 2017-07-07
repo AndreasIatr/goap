@@ -9,20 +9,21 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class OpenDoorTest {
 
     private static LinkedList<ActionNode<String>> pathForGoalNoState, pathForGoalWithState;
-    private static Action<String> walkThroughDoor, openDoor;
+    private static Action<String> openDoor;
     private static int expectedTotalCost, expectedNumberOfNodes;
+    private static String doorIsOpen;
 
     @BeforeClass
     public static void setup() throws PathToGoalNotFoundException {
         String hasKey = "has key";
         String doorIsLocked = "door is locked";
         String doorIsUnlocked = "door is unlocked";
-        String doorIsOpen = "door is open";
+        doorIsOpen = "door is open";
         String doorBashed = "door bashed";
 
         Action<String> attemptToOpenDoor = new Action<>("Attempt To Open Door", 1);
@@ -54,34 +55,27 @@ public class OpenDoorTest {
         expectedNumberOfNodes++;
         expectedTotalCost += breakDownDoor.getCost();
 
-        walkThroughDoor = new Action<>("Walk Through Door", 1);
-        walkThroughDoor.addPrecondition(doorIsOpen);
-        expectedNumberOfNodes++;
-        expectedTotalCost += walkThroughDoor.getCost();
-
         List<Action<String>> actions = asList(attemptToOpenDoor, lookForKey, unlockDoor, openDoor,
-                bashDoor, breakDownDoor, walkThroughDoor);
+                bashDoor, breakDownDoor);
 
         Planner<String> planner = new Planner<>();
 
         ArrayList<String> state = new ArrayList<>();
 
-        pathForGoalNoState = planner.getPlan(actions, walkThroughDoor, state);
+        pathForGoalNoState = planner.getPlan(actions, doorIsOpen, state);
 
         state.add(doorIsUnlocked);
-        pathForGoalWithState = planner.getPlan(actions, walkThroughDoor, state);
+        pathForGoalWithState = planner.getPlan(actions, doorIsOpen, state);
     }
 
     @Test
     public void can_reach_goal_no_state_test() {
-        assertFalse("Could not find path", pathForGoalNoState.isEmpty());
-        assertEquals(walkThroughDoor, pathForGoalNoState.peekLast().getAction());
+        assertTrue(pathForGoalNoState.peekLast().getAction().getEffects().contains(doorIsOpen));
     }
 
     @Test
     public void can_reach_goal_with_state_test() {
-        assertFalse("Could not find path", pathForGoalWithState.isEmpty());
-        assertEquals(walkThroughDoor, pathForGoalWithState.peekLast().getAction());
+        assertTrue(pathForGoalWithState.peekLast().getAction().getEffects().contains(doorIsOpen));
     }
 
     @Test
@@ -91,7 +85,7 @@ public class OpenDoorTest {
 
     @Test
     public void number_of_nodes_with_state_test() {
-        assertEquals(2, pathForGoalWithState.size());
+        assertEquals(openDoor.getCost(), pathForGoalWithState.size());
     }
 
     @Test
@@ -101,7 +95,7 @@ public class OpenDoorTest {
 
     @Test
     public void fastest_path_with_state_test() {
-        assertEquals(openDoor.getCost() + walkThroughDoor.getCost(),
+        assertEquals(openDoor.getCost(),
                 pathForGoalWithState.peekLast().getTotalCost());
     }
 }

@@ -9,10 +9,10 @@ public class Planner<T> {
 
     public LinkedList<ActionNode<T>> getPlan(
             @NonNull Collection<Action<T>> actions,
-            @NonNull Action<T> goal,
+            @NonNull T goal,
             @NonNull List<T> state) throws PathToGoalNotFoundException {
 
-        if (actions.isEmpty() || !actions.contains(goal)) {
+        if (actions.isEmpty() || !canAnyActionProduceGoal(actions, goal)) {
             throw new PathToGoalNotFoundException(goal);
         }
 
@@ -24,7 +24,7 @@ public class Planner<T> {
 
         while (!(localActions.isEmpty() || pathForGoal.isEmpty())) {
 
-            if (pathForGoal.peekLast().getAction().equals(goal)) {
+            if (pathForGoal.peekLast().getAction().getEffects().contains(goal)) {
                 paths.add(pathForGoal);
             }
 
@@ -40,7 +40,14 @@ public class Planner<T> {
         return getFastestOfPaths(paths);
     }
 
-    private LinkedList<ActionNode<T>> getPossiblePathsToGoal(Collection<Action<T>> actions, Action<T> goal, List<T> state) {
+    private boolean canAnyActionProduceGoal(Collection<Action<T>> actions, T goal) {
+        return actions.stream()
+                .map(Action::getEffects)
+                .flatMap(List::stream)
+                .anyMatch(goal::equals);
+    }
+
+    private LinkedList<ActionNode<T>> getPossiblePathsToGoal(Collection<Action<T>> actions, T goal, List<T> state) {
 
         List<T> localState = new ArrayList<>(state);
 
@@ -57,7 +64,7 @@ public class Planner<T> {
         while (!openSet.isEmpty()) {
             ActionNode<T> current = Collections.min(openSet);
 
-            if (current.getAction().equals(goal)) {
+            if (current.getAction().getEffects().contains(goal)) {
                 return calcPath(current);
             }
 

@@ -7,23 +7,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CrossLakeTest {
 
-    private static Action<String> reachDestination;
     private static Action<String> chopWood;
     private static Action<String> buildRaft;
     private static LinkedList<ActionNode<String>> pathForGoalNoState;
     private static LinkedList<ActionNode<String>> pathForGoalWithState;
     private static int expectedTotalCost, expectedNumberOfNodes;
+    private static String crossLake;
 
     @BeforeClass
     public static void setup() throws PathToGoalNotFoundException {
         String hasWood = "has wood";
-        String crossLake = "cross lake";
+        crossLake = "cross lake";
         String hasRaft = "has raft";
 
         expectedTotalCost = 0;
@@ -61,36 +59,29 @@ public class CrossLakeTest {
         });
         fail.addPrecondition("Lazy Cost Calculation Fails");
 
-        reachDestination = new Action<>("Reach Destination", 1);
-        reachDestination.addPrecondition(crossLake);
-        expectedTotalCost += reachDestination.getCost();
-        expectedNumberOfNodes++;
-
         Planner<String> planner = new Planner<>();
 
         List<Action<String>> actions = asList(
                 fail,
                 chopWood, lookForWood, buildRaft, crossLakeByBoat,
-                crossLakeBySwimming, goAroundTheLakeOnFoot, reachDestination);
+                crossLakeBySwimming, goAroundTheLakeOnFoot);
 
         List<String> state = new LinkedList<>();
 
-        pathForGoalNoState = planner.getPlan(actions, reachDestination, state);
+        pathForGoalNoState = planner.getPlan(actions, crossLake, state);
 
         state.add(hasRaft);
-        pathForGoalWithState = planner.getPlan(actions, reachDestination, state);
+        pathForGoalWithState = planner.getPlan(actions, crossLake, state);
     }
 
     @Test
     public void can_reach_goal_no_state_test() {
-        assertFalse("Could not find path", pathForGoalNoState.isEmpty());
-        assertEquals(reachDestination, pathForGoalNoState.peekLast().getAction());
+        assertTrue(pathForGoalNoState.peekLast().getAction().getEffects().contains(crossLake));
     }
 
     @Test
     public void can_reach_goal_with_state_test() {
-        assertFalse("Could not find path", pathForGoalWithState.isEmpty());
-        assertEquals(reachDestination, pathForGoalWithState.peekLast().getAction());
+        assertTrue(pathForGoalWithState.peekLast().getAction().getEffects().contains(crossLake));
     }
 
     @Test
