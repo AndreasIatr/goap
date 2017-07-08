@@ -1,10 +1,10 @@
 package goap;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.fail;
 
@@ -14,7 +14,7 @@ public class NoPathFoundTest {
     public void no_actions_results_in_exception_test() {
         Planner<String> planner = new Planner<>();
         try {
-            planner.getPlan(Collections.emptyList(), "goal", Collections.emptyList());
+            planner.getPlan(Collections.emptySet(), "goal", Collections.emptyList());
             fail();
         } catch (PathToGoalNotFoundException e) {
             // should happen
@@ -28,7 +28,7 @@ public class NoPathFoundTest {
         Action<String> action1 = new Action<>("Action1", 1);
         Action<String> action2 = new Action<>("Action2", 2);
 
-        List<Action<String>> actions = Arrays.asList(action1, action2);
+        Set<Action<String>> actions = Sets.newSet(action1, action2);
 
         try {
             planner.getPlan(actions, "Some impossible precondition", Collections.emptyList());

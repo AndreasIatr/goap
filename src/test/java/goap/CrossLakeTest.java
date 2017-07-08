@@ -2,12 +2,14 @@ package goap;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CrossLakeTest {
 
@@ -56,7 +58,7 @@ public class CrossLakeTest {
 
         Planner<String> planner = new Planner<>();
 
-        List<Action<String>> actions = asList(
+        Set<Action<String>> actions = Sets.newSet(
                 chopWood, lookForWood, buildRaft, crossLakeByBoat,
                 crossLakeBySwimming, goAroundTheLakeOnFoot);
 

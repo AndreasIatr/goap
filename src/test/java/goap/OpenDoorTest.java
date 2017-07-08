@@ -2,12 +2,12 @@ package goap;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +55,7 @@ public class OpenDoorTest {
         expectedNumberOfNodes++;
         expectedTotalCost += breakDownDoor.getCost();
 
-        List<Action<String>> actions = asList(attemptToOpenDoor, lookForKey, unlockDoor, openDoor,
+        Set<Action<String>> actions = Sets.newSet(attemptToOpenDoor, lookForKey, unlockDoor, openDoor,
                 bashDoor, breakDownDoor);
 
         Planner<String> planner = new Planner<>();

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class Planner<T> {
 
     public LinkedList<ActionNode<T>> getPlan(
-            @NonNull Collection<Action<T>> actions,
+            @NonNull Set<Action<T>> actions,
             @NonNull T goal,
             @NonNull Collection<T> state) throws PathToGoalNotFoundException {
 
@@ -16,7 +16,7 @@ public class Planner<T> {
             throw new PathToGoalNotFoundException(goal);
         }
 
-        LinkedList<Action<T>> localActions = new LinkedList<>(actions);
+        Set<Action<T>> localActions = new HashSet<>(actions);
         List<LinkedList<ActionNode<T>>> paths = new LinkedList<>();
 
         LinkedList<ActionNode<T>> pathForGoal = getPossiblePathsToGoal(localActions, goal, state);
