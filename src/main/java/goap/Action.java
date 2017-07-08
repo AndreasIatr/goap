@@ -58,8 +58,8 @@ public class Action<T> {
     public void addEffect(Supplier<T> effect) {
         lazyEffects.add(effect);
     }
-    public void addEffect(T precondition) {
-        lazyEffects.add(() -> precondition);
+    public void addEffect(T effect) {
+        lazyEffects.add(() -> effect);
     }
 
     public Action(String name, int cost) {
