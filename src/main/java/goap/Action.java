@@ -1,13 +1,14 @@
 package goap;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-@Data
 public class Action<T> {
+    @Getter
     private final String name;
 
     private final Supplier<Integer> costSupplier;
@@ -19,11 +20,29 @@ public class Action<T> {
         return cost;
     }
 
-    private final List<T> preconditions = new LinkedList<>();
-    public void addPrecondition(T precondition) {
-        preconditions.add(precondition);
+    @Getter
+    private List<T> preconditions = new LinkedList<>();
+    public List<T> getPreconditions() {
+        if (preconditions.isEmpty()) {
+            preconditions = getCalculatedPreconditions();
+        }
+        return preconditions;
     }
 
+    private final List<Supplier<T>> lazyPreconditions = new LinkedList<>();
+    private List<T> getCalculatedPreconditions() {
+        return lazyPreconditions.stream()
+                .map(Supplier::get)
+                .collect(Collectors.toList());
+    }
+    public void addPrecondition(Supplier<T> precondition) {
+        lazyPreconditions.add(precondition);
+    }
+    public void addPrecondition(T precondition) {
+        lazyPreconditions.add(() -> precondition);
+    }
+
+    @Getter
     private final List<T> effects = new LinkedList<>();
     public void addEffect(T effect) {
         effects.add(effect);

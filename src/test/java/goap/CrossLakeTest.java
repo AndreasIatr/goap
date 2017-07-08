@@ -53,16 +53,10 @@ public class CrossLakeTest {
         Action<String> goAroundTheLakeOnFoot = new Action<>("Go Around The Lake On Foot", 11);
         goAroundTheLakeOnFoot.addEffect(crossLake);
 
-        Action<String> fail = new Action<>("Fail", () -> {
-            fail();
-            return 10;
-        });
-        fail.addPrecondition("Lazy Cost Calculation Fails");
 
         Planner<String> planner = new Planner<>();
 
         List<Action<String>> actions = asList(
-                fail,
                 chopWood, lookForWood, buildRaft, crossLakeByBoat,
                 crossLakeBySwimming, goAroundTheLakeOnFoot);
 
