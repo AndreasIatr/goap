@@ -10,17 +10,16 @@ public class Planner<T> {
     public LinkedList<ActionNode<T>> getPlan(
             @NonNull Collection<Action<T>> actions,
             @NonNull T goal,
-            @NonNull List<T> state) throws PathToGoalNotFoundException {
+            @NonNull Collection<T> state) throws PathToGoalNotFoundException {
 
         if (actions.isEmpty() || !canAnyActionProduceGoal(actions, goal)) {
             throw new PathToGoalNotFoundException(goal);
         }
 
         LinkedList<Action<T>> localActions = new LinkedList<>(actions);
-        List<T> localState = new ArrayList<>(state);
         List<LinkedList<ActionNode<T>>> paths = new LinkedList<>();
 
-        LinkedList<ActionNode<T>> pathForGoal = getPossiblePathsToGoal(localActions, goal, localState);
+        LinkedList<ActionNode<T>> pathForGoal = getPossiblePathsToGoal(localActions, goal, state);
 
         while (!(localActions.isEmpty() || pathForGoal.isEmpty())) {
 
@@ -30,7 +29,7 @@ public class Planner<T> {
 
             // force a different startNode on the next path
             localActions.remove(pathForGoal.peekFirst().getAction());
-            pathForGoal = getPossiblePathsToGoal(localActions, goal, localState);
+            pathForGoal = getPossiblePathsToGoal(localActions, goal, state);
         }
 
         if (paths.isEmpty()) {
@@ -47,7 +46,7 @@ public class Planner<T> {
                 .anyMatch(goal::equals);
     }
 
-    private LinkedList<ActionNode<T>> getPossiblePathsToGoal(Collection<Action<T>> actions, T goal, List<T> state) {
+    private LinkedList<ActionNode<T>> getPossiblePathsToGoal(Collection<Action<T>> actions, T goal, Collection<T> state) {
 
         List<T> localState = new ArrayList<>(state);
 
