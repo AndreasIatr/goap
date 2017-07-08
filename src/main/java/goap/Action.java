@@ -41,10 +41,25 @@ public class Action<T> {
         lazyPreconditions.add(() -> precondition);
     }
 
-    @Getter
-    private final List<T> effects = new LinkedList<>();
-    public void addEffect(T effect) {
-        effects.add(effect);
+    private List<T> effects = new LinkedList<>();
+    public List<T> getEffects() {
+        if (effects.isEmpty()) {
+            effects = getCalculatedEffects();
+        }
+        return effects;
+    }
+
+    private final List<Supplier<T>> lazyEffects = new LinkedList<>();
+    private List<T> getCalculatedEffects() {
+        return lazyEffects.stream()
+                .map(Supplier::get)
+                .collect(Collectors.toList());
+    }
+    public void addEffect(Supplier<T> effect) {
+        lazyEffects.add(effect);
+    }
+    public void addEffect(T precondition) {
+        lazyEffects.add(() -> precondition);
     }
 
     public Action(String name, int cost) {

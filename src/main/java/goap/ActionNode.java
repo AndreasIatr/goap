@@ -1,12 +1,17 @@
 package goap;
 
 import lombok.Data;
+import lombok.Setter;
+
+import java.util.Comparator;
 
 @Data
 public class ActionNode<T> implements Comparable<ActionNode> {
     private final Action<T> action;
     private ActionNode<T> previous;
     private final int totalCost;
+    @Setter
+    private Comparator<ActionNode<T>> comparator = Comparator.comparing(ActionNode::getTotalCost);
 
     @Override
     public boolean equals(Object o) {
@@ -23,16 +28,8 @@ public class ActionNode<T> implements Comparable<ActionNode> {
         return action.hashCode();
     }
 
-
     @Override
     public int compareTo(ActionNode o) {
-        int compareTo = Integer.compare(totalCost, o.totalCost);
-        if (compareTo == 0) {
-            compareTo = Integer.compare(action.getEffects().size(), o.action.getEffects().size());
-            if (compareTo == 0)
-                return -Integer.compare(action.getPreconditions().size(), o.action.getPreconditions().size());
-            return compareTo;
-        }
-        return compareTo;
+        return comparator.compare(this, o);
     }
 }
