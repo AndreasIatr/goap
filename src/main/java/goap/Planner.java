@@ -12,7 +12,7 @@ public class Planner<T> {
             @NonNull T goal,
             @NonNull Collection<T> state) throws PathToGoalNotFoundException {
 
-        if (actions.isEmpty() || !canAnyActionProduceGoal(actions, goal)) {
+        if (actions.isEmpty()) {
             throw new PathToGoalNotFoundException(goal);
         }
 
@@ -39,16 +39,8 @@ public class Planner<T> {
         return getFastestOfPaths(paths);
     }
 
-    private boolean canAnyActionProduceGoal(Collection<Action<T>> actions, T goal) {
-        return actions.stream()
-                .map(Action::getEffects)
-                .flatMap(List::stream)
-                .anyMatch(goal::equals);
-    }
-
     private LinkedList<ActionNode<T>> getPossiblePathsToGoal(Collection<Action<T>> actions, T goal, Collection<T> state) {
 
-        List<T> localState = new ArrayList<>(state);
 
         // The set of nodes already evaluated.
         Set<ActionNode<T>> closedSet = new HashSet<>();
@@ -56,7 +48,7 @@ public class Planner<T> {
         // The set of currently discovered nodes still to be evaluated.
         // Initially, only the start nodes are known.
         Set<ActionNode<T>> openSet = actions.stream()
-                .filter(a -> localState.containsAll(a.getPreconditions()))
+                .filter(a -> state.containsAll(a.getPreconditions()))
                 .map(a -> new ActionNode<>(a, a.getCost()))
                 .collect(Collectors.toSet());
 
@@ -70,8 +62,8 @@ public class Planner<T> {
             openSet.remove(current);
             closedSet.add(current);
 
-            List<T> currentState = new LinkedList<>();
-            currentState.addAll(localState);
+            Set<T> currentState = new HashSet<>();
+            currentState.addAll(state);
             currentState.addAll(current.getAction().getEffects());
 
             getNeighborActionNodes(current, actions, currentState).stream()
@@ -81,7 +73,6 @@ public class Planner<T> {
                         openSet.add(an);
 
                         an.setPrevious(current);
-                        localState.addAll(current.getAction().getEffects());
                     });
 
         }
@@ -130,7 +121,7 @@ public class Planner<T> {
      * @param state   current state
      * @return nodes that can be traversed using current state
      */
-    private List<ActionNode<T>> getNeighborActionNodes(ActionNode<T> current, Collection<Action<T>> actions, List<T> state) {
+    private List<ActionNode<T>> getNeighborActionNodes(ActionNode<T> current, Collection<Action<T>> actions, Collection<T> state) {
         return actions.stream()
                 .filter(a -> state.containsAll(a.getPreconditions()))
                 .filter(a -> !a.equals(current.getAction()))
